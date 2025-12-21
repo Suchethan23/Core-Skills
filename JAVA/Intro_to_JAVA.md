@@ -1,5 +1,8 @@
 # Complete Java Introduction - Comprehensive Notes
 
+Java is a high-level, object-oriented programming language developed by Sun Microsystems (now owned by Oracle) in 1995. 
+Created by James Gosling and his team, Java was designed with the philosophy of "Write Once, Run Anywhere" (WORA),
+meaning code written in Java can run on any platform that has a Java Virtual Machine (JVM) without needing to be recompiled.
 ## 1. Why Java? How is it Different from Other Languages?
 
 ### Why Java?
