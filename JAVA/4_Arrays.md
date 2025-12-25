@@ -2155,5 +2155,1047 @@ int[][] studentScores = {
     }
 }
 ```
+---
+
+## Array Algorithms
+
+### 1. Two Pointer Technique
+
+**Use Cases:** Palindrome check, pair sum, remove duplicates, merge sorted arrays
+
+#### A. Pair Sum (Sorted Array)
+
+```java
+public static boolean findPairWithSum(int[] arr, int target) {
+    int left = 0;
+    int right = arr.length - 1;
+    
+    while (left < right) {
+        int sum = arr[left] + arr[right];
+        
+        if (sum == target) {
+            System.out.println("Pair found: " + arr[left] + ", " + arr[right]);
+            return true;
+        } else if (sum < target) {
+            left++;
+        } else {
+            right--;
+        }
+    }
+    
+    return false;
+}
+
+// Usage
+int[] arr = {1, 2, 3, 4, 5, 6};
+findPairWithSum(arr, 9);  // Output: Pair found: 3, 6
+```
+
+**Time:** O(n), **Space:** O(1)
+
+---
+
+#### B. Remove Duplicates from Sorted Array
+
+```java
+public static int removeDuplicates(int[] arr) {
+    if (arr.length == 0) return 0;
+    
+    int i = 0;  // Pointer for unique elements
+    
+    for (int j = 1; j < arr.length; j++) {
+        if (arr[j] != arr[i]) {
+            i++;
+            arr[i] = arr[j];
+        }
+    }
+    
+    return i + 1;  // New length
+}
+
+// Usage
+int[] arr = {1, 1, 2, 2, 3, 4, 4, 5};
+int newLength = removeDuplicates(arr);
+System.out.println("New length: " + newLength);  // 5
+System.out.println(Arrays.toString(Arrays.copyOf(arr, newLength)));
+// Output: [1, 2, 3, 4, 5]
+```
+
+**Time:** O(n), **Space:** O(1)
+
+---
+
+#### C. Dutch National Flag (Sort 0s, 1s, 2s)
+
+```java
+public static void sortColors(int[] arr) {
+    int low = 0, mid = 0, high = arr.length - 1;
+    
+    while (mid <= high) {
+        if (arr[mid] == 0) {
+            swap(arr, low, mid);
+            low++;
+            mid++;
+        } else if (arr[mid] == 1) {
+            mid++;
+        } else {  // arr[mid] == 2
+            swap(arr, mid, high);
+            high--;
+        }
+    }
+}
+
+private static void swap(int[] arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+// Usage
+int[] arr = {2, 0, 1, 2, 1, 0, 1, 2, 0};
+sortColors(arr);
+System.out.println(Arrays.toString(arr));
+// Output: [0, 0, 0, 1, 1, 1, 2, 2, 2]
+```
+
+**Time:** O(n), **Space:** O(1)
+
+---
+
+### 2. Sliding Window Technique
+
+**Use Cases:** Maximum/minimum sum of k consecutive elements, longest substring
+
+#### A. Maximum Sum of k Consecutive Elements
+
+```java
+public static int maxSumK(int[] arr, int k) {
+    if (arr.length < k) return -1;
+    
+    // Calculate sum of first window
+    int windowSum = 0;
+    for (int i = 0; i < k; i++) {
+        windowSum += arr[i];
+    }
+    
+    int maxSum = windowSum;
+    
+    // Slide the window
+    for (int i = k; i < arr.length; i++) {
+        windowSum = windowSum - arr[i - k] + arr[i];
+        maxSum = Math.max(maxSum, windowSum);
+    }
+    
+    return maxSum;
+}
+
+// Usage
+int[] arr = {1, 4, 2, 10, 23, 3, 1, 0, 20};
+System.out.println(maxSumK(arr, 4));  // Output: 39 (10+23+3+1+0+20)
+```
+
+**Time:** O(n), **Space:** O(1)
+
+---
+
+#### B. Longest Subarray with Sum ≤ k
+
+```java
+public static int longestSubarrayWithSumK(int[] arr, int k) {
+    int start = 0, sum = 0, maxLength = 0;
+    
+    for (int end = 0; end < arr.length; end++) {
+        sum += arr[end];
+        
+        while (sum > k && start <= end) {
+            sum -= arr[start];
+            start++;
+        }
+        
+        maxLength = Math.max(maxLength, end - start + 1);
+    }
+    
+    return maxLength;
+}
+
+// Usage
+int[] arr = {1, 2, 3, 4, 5};
+System.out.println(longestSubarrayWithSumK(arr, 8));  // Output: 3 (1+2+3 or 3+4)
+```
+
+**Time:** O(n), **Space:** O(1)
+
+---
+
+### 3. Kadane's Algorithm (Maximum Subarray Sum)
+
+```java
+public static int maxSubarraySum(int[] arr) {
+    int maxSoFar = arr[0];
+    int maxEndingHere = arr[0];
+    
+    for (int i = 1; i < arr.length; i++) {
+        maxEndingHere = Math.max(arr[i], maxEndingHere + arr[i]);
+        maxSoFar = Math.max(maxSoFar, maxEndingHere);
+    }
+    
+    return maxSoFar;
+}
+
+// Usage
+int[] arr = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
+System.out.println("Max subarray sum: " + maxSubarraySum(arr));
+// Output: 6 (subarray [4, -1, 2, 1])
+```
+
+**Time:** O(n), **Space:** O(1)
+
+**With Indices:**
+```java
+public static void maxSubarraySumWithIndices(int[] arr) {
+    int maxSoFar = arr[0];
+    int maxEndingHere = arr[0];
+    int start = 0, end = 0, tempStart = 0;
+    
+    for (int i = 1; i < arr.length; i++) {
+        if (arr[i] > maxEndingHere + arr[i]) {
+            maxEndingHere = arr[i];
+            tempStart = i;
+        } else {
+            maxEndingHere = maxEndingHere + arr[i];
+        }
+        
+        if (maxEndingHere > maxSoFar) {
+            maxSoFar = maxEndingHere;
+            start = tempStart;
+            end = i;
+        }
+    }
+    
+    System.out.println("Max sum: " + maxSoFar);
+    System.out.println("From index " + start + " to " + end);
+}
+```
+
+---
+
+### 4. Prefix Sum Technique
+
+**Use Cases:** Range sum queries, subarray sum problems
+
+#### A. Build Prefix Sum Array
+
+```java
+public static int[] buildPrefixSum(int[] arr) {
+    int[] prefix = new int[arr.length];
+    prefix[0] = arr[0];
+    
+    for (int i = 1; i < arr.length; i++) {
+        prefix[i] = prefix[i - 1] + arr[i];
+    }
+    
+    return prefix;
+}
+
+// Usage
+int[] arr = {1, 2, 3, 4, 5};
+int[] prefix = buildPrefixSum(arr);
+System.out.println(Arrays.toString(prefix));
+// Output: [1, 3, 6, 10, 15]
+```
+
+---
+
+#### B. Range Sum Query
+
+```java
+public static int rangeSum(int[] prefix, int left, int right) {
+    if (left == 0) {
+        return prefix[right];
+    }
+    return prefix[right] - prefix[left - 1];
+}
+
+// Usage
+int[] arr = {1, 2, 3, 4, 5};
+int[] prefix = buildPrefixSum(arr);
+System.out.println(rangeSum(prefix, 1, 3));  // Sum from index 1 to 3 = 2+3+4 = 9
+```
+
+**Time:** Build - O(n), Query - O(1)
+
+---
+
+### 5. Moore's Voting Algorithm (Majority Element)
+
+Find element that appears more than n/2 times.
+
+```java
+public static int findMajorityElement(int[] arr) {
+    int candidate = arr[0];
+    int count = 1;
+    
+    // Find candidate
+    for (int i = 1; i < arr.length; i++) {
+        if (arr[i] == candidate) {
+            count++;
+        } else {
+            count--;
+        }
+        
+        if (count == 0) {
+            candidate = arr[i];
+            count = 1;
+        }
+    }
+    
+    // Verify candidate
+    count = 0;
+    for (int num : arr) {
+        if (num == candidate) {
+            count++;
+        }
+    }
+    
+    if (count > arr.length / 2) {
+        return candidate;
+    }
+    
+    return -1;  // No majority element
+}
+
+// Usage
+int[] arr = {2, 2, 1, 1, 1, 2, 2};
+System.out.println("Majority element: " + findMajorityElement(arr));
+// Output: 2
+```
+
+**Time:** O(n), **Space:** O(1)
+
+---
+
+### 6. Fast and Slow Pointer (Floyd's Cycle Detection)
+
+```java
+public static boolean hasCycle(int[] arr) {
+    // For arrays, typically used to detect cycles in linked structures
+    // Example: Find duplicate in array with values 1 to n
+    
+    int slow = arr[0];
+    int fast = arr[0];
+    
+    do {
+        slow = arr[slow];
+        fast = arr[arr[fast]];
+    } while (slow != fast);
+    
+    // Find the entrance of the cycle
+    slow = arr[0];
+    while (slow != fast) {
+        slow = arr[slow];
+        fast = arr[fast];
+    }
+    
+    return true;
+}
+```
+
+---
+
+## Common Array Problems
+
+### 1. Find Missing Number (1 to N)
+
+```java
+public static int findMissingNumber(int[] arr, int n) {
+    // Method 1: Using sum formula
+    int expectedSum = n * (n + 1) / 2;
+    int actualSum = 0;
+    
+    for (int num : arr) {
+        actualSum += num;
+    }
+    
+    return expectedSum - actualSum;
+}
+
+// Method 2: Using XOR
+public static int findMissingNumberXOR(int[] arr, int n) {
+    int xor1 = 0, xor2 = 0;
+    
+    for (int i = 0; i < arr.length; i++) {
+        xor1 ^= arr[i];
+    }
+    
+    for (int i = 1; i <= n; i++) {
+        xor2 ^= i;
+    }
+    
+    return xor1 ^ xor2;
+}
+
+// Usage
+int[] arr = {1, 2, 4, 5, 6};  // Missing: 3
+System.out.println(findMissingNumber(arr, 6));  // Output: 3
+```
+
+---
+
+### 2. Find Duplicate Number
+
+```java
+public static int findDuplicate(int[] arr) {
+    // Method 1: Using frequency array
+    boolean[] seen = new boolean[arr.length];
+    
+    for (int num : arr) {
+        if (seen[num]) {
+            return num;
+        }
+        seen[num] = true;
+    }
+    
+    return -1;
+}
+
+// Method 2: Floyd's Algorithm (O(1) space)
+public static int findDuplicateOptimal(int[] arr) {
+    int slow = arr[0];
+    int fast = arr[0];
+    
+    // Find intersection point
+    do {
+        slow = arr[slow];
+        fast = arr[arr[fast]];
+    } while (slow != fast);
+    
+    // Find entrance to cycle (duplicate)
+    slow = arr[0];
+    while (slow != fast) {
+        slow = arr[slow];
+        fast = arr[fast];
+    }
+    
+    return slow;
+}
+```
+
+---
+
+### 3. Move Zeros to End
+
+```java
+public static void moveZerosToEnd(int[] arr) {
+    int nonZeroIndex = 0;
+    
+    // Move all non-zero elements to front
+    for (int i = 0; i < arr.length; i++) {
+        if (arr[i] != 0) {
+            arr[nonZeroIndex++] = arr[i];
+        }
+    }
+    
+    // Fill remaining with zeros
+    while (nonZeroIndex < arr.length) {
+        arr[nonZeroIndex++] = 0;
+    }
+}
+
+// Usage
+int[] arr = {0, 1, 0, 3, 12};
+moveZerosToEnd(arr);
+System.out.println(Arrays.toString(arr));
+// Output: [1, 3, 12, 0, 0]
+```
+
+**Time:** O(n), **Space:** O(1)
+
+---
+
+### 4. Merge Two Sorted Arrays
+
+```java
+public static int[] mergeSortedArrays(int[] arr1, int[] arr2) {
+    int[] result = new int[arr1.length + arr2.length];
+    int i = 0, j = 0, k = 0;
+    
+    while (i < arr1.length && j < arr2.length) {
+        if (arr1[i] <= arr2[j]) {
+            result[k++] = arr1[i++];
+        } else {
+            result[k++] = arr2[j++];
+        }
+    }
+    
+    // Copy remaining elements
+    while (i < arr1.length) {
+        result[k++] = arr1[i++];
+    }
+    
+    while (j < arr2.length) {
+        result[k++] = arr2[j++];
+    }
+    
+    return result;
+}
+
+// Usage
+int[] arr1 = {1, 3, 5, 7};
+int[] arr2 = {2, 4, 6, 8};
+int[] merged = mergeSortedArrays(arr1, arr2);
+System.out.println(Arrays.toString(merged));
+// Output: [1, 2, 3, 4, 5, 6, 7, 8]
+```
+
+**Time:** O(n + m), **Space:** O(n + m)
+
+---
+
+### 5. Find Intersection of Two Arrays
+
+```java
+public static List<Integer> findIntersection(int[] arr1, int[] arr2) {
+    Set<Integer> set = new HashSet<>();
+    List<Integer> result = new ArrayList<>();
+    
+    for (int num : arr1) {
+        set.add(num);
+    }
+    
+    for (int num : arr2) {
+        if (set.contains(num)) {
+            result.add(num);
+            set.remove(num);  // Avoid duplicates
+        }
+    }
+    
+    return result;
+}
+
+// For sorted arrays (more efficient)
+public static List<Integer> findIntersectionSorted(int[] arr1, int[] arr2) {
+    List<Integer> result = new ArrayList<>();
+    int i = 0, j = 0;
+    
+    while (i < arr1.length && j < arr2.length) {
+        if (arr1[i] == arr2[j]) {
+            result.add(arr1[i]);
+            i++;
+            j++;
+        } else if (arr1[i] < arr2[j]) {
+            i++;
+        } else {
+            j++;
+        }
+    }
+    
+    return result;
+}
+```
+
+---
+
+### 6. Leaders in an Array
+
+Element is a leader if it's greater than all elements to its right.
+
+```java
+public static List<Integer> findLeaders(int[] arr) {
+    List<Integer> leaders = new ArrayList<>();
+    int maxFromRight = arr[arr.length - 1];
+    leaders.add(maxFromRight);
+    
+    for (int i = arr.length - 2; i >= 0; i--) {
+        if (arr[i] > maxFromRight) {
+            leaders.add(arr[i]);
+            maxFromRight = arr[i];
+        }
+    }
+    
+    Collections.reverse(leaders);
+    return leaders;
+}
+
+// Usage
+int[] arr = {16, 17, 4, 3, 5, 2};
+System.out.println(findLeaders(arr));
+// Output: [17, 5, 2]
+```
+
+**Time:** O(n), **Space:** O(k) where k is number of leaders
+
+---
+
+### 7. Stock Buy and Sell (Maximum Profit)
+
+```java
+public static int maxProfit(int[] prices) {
+    int minPrice = Integer.MAX_VALUE;
+    int maxProfit = 0;
+    
+    for (int price : prices) {
+        minPrice = Math.min(minPrice, price);
+        maxProfit = Math.max(maxProfit, price - minPrice);
+    }
+    
+    return maxProfit;
+}
+
+// Usage
+int[] prices = {7, 1, 5, 3, 6, 4};
+System.out.println("Max profit: " + maxProfit(prices));
+// Output: 5 (buy at 1, sell at 6)
+```
+
+**Time:** O(n), **Space:** O(1)
+
+---
+
+### 8. Trapping Rain Water
+
+```java
+public static int trapRainWater(int[] height) {
+    if (height.length == 0) return 0;
+    
+    int left = 0, right = height.length - 1;
+    int leftMax = 0, rightMax = 0;
+    int water = 0;
+    
+    while (left < right) {
+        if (height[left] < height[right]) {
+            if (height[left] >= leftMax) {
+                leftMax = height[left];
+            } else {
+                water += leftMax - height[left];
+            }
+            left++;
+        } else {
+            if (height[right] >= rightMax) {
+                rightMax = height[right];
+            } else {
+                water += rightMax - height[right];
+            }
+            right--;
+        }
+    }
+    
+    return water;
+}
+
+// Usage
+int[] height = {0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1};
+System.out.println("Water trapped: " + trapRainWater(height));
+// Output: 6
+```
+
+**Time:** O(n), **Space:** O(1)
+
+---
+
+## Arrays Class Utility
+
+### Important Methods
+
+```java
+import java.util.Arrays;
+
+int[] arr = {5, 2, 8, 1, 9};
+
+// 1. Sort
+Arrays.sort(arr);  // [1, 2, 5, 8, 9]
+
+// 2. Binary Search (requires sorted array)
+int index = Arrays.binarySearch(arr, 5);  // Returns index
+
+// 3. Fill array with value
+Arrays.fill(arr, 0);  // All elements become 0
+
+// 4. Fill range
+Arrays.fill(arr, 1, 4, 10);  // Fill index 1 to 3 with 10
+
+// 5. Copy array
+int[] copy = Arrays.copyOf(arr, arr.length);
+
+// 6. Copy range
+int[] range = Arrays.copyOfRange(arr, 1, 4);  // Index 1 to 3
+
+// 7. Compare arrays
+boolean equal = Arrays.equals(arr, copy);
+
+// 8. Deep compare (for multi-dimensional)
+boolean deepEqual = Arrays.deepEquals(matrix1, matrix2);
+
+// 9. Convert to String
+String str = Arrays.toString(arr);
+
+// 10. Deep String (for multi-dimensional)
+String deepStr = Arrays.deepToString(matrix);
+
+// 11. Stream operations (Java 8+)
+int sum = Arrays.stream(arr).sum();
+double avg = Arrays.stream(arr).average().orElse(0.0);
+int max = Arrays.stream(arr).max().getAsInt();
+int min = Arrays.stream(arr).min().getAsInt();
+
+// 12. Parallel sort (for large arrays)
+Arrays.parallelSort(arr);
+
+// 13. Set all elements using generator
+Arrays.setAll(arr, i -> i * i);  // arr[i] = i²
+
+// 14. Parallel prefix (cumulative operation)
+Arrays.parallelPrefix(arr, (a, b) -> a + b);  // Prefix sum
+
+// 15. Compare arrays lexicographically
+int result = Arrays.compare(arr1, arr2);
+// Returns: negative if arr1 < arr2, 0 if equal, positive if arr1 > arr2
+
+// 16. Mismatch (find first difference)
+int mismatchIndex = Arrays.mismatch(arr1, arr2);
+```
+
+---
+
+## Memory Considerations
+
+### 1. Memory Usage
+
+```java
+// Primitive array
+int[] arr = new int[1000];
+// Memory: 4000 bytes + object overhead (~24 bytes) = ~4024 bytes
+
+// Object array
+String[] names = new String[1000];
+// Memory: 8000 bytes (references) + overhead + actual String objects
+```
+
+### 2. Array Size Limits
+
+```java
+// Maximum array size: Integer.MAX_VALUE (2³¹ - 1)
+// Practical limit: JVM heap size and system memory
+
+// Large array example
+int[] large = new int[10_000_000];  // 40 MB
+```
+
+### 3. Memory Leaks
+
+```java
+// Problem: Holding references prevents garbage collection
+public class LeakExample {
+    private static List<int[]> cache = new ArrayList<>();
+    
+    public static void addToCache(int[] data) {
+        cache.add(data);  // Never cleared - memory leak!
+    }
+}
+
+// Solution: Clear when done
+cache.clear();
+```
+
+---
+
+## Common Mistakes
+
+### 1. Array Index Out of Bounds
+
+```java
+// WRONG
+int[] arr = new int[5];
+arr[5] = 10;  // ERROR! Valid indices: 0-4
+
+// CORRECT
+if (index >= 0 && index < arr.length) {
+    arr[index] = 10;
+}
+```
+
+### 2. Null Pointer Exception
+
+```java
+// WRONG
+int[] arr = null;
+System.out.println(arr.length);  // NullPointerException!
+
+// CORRECT
+if (arr != null) {
+    System.out.println(arr.length);
+}
+```
+
+### 3. Comparing with ==
+
+```java
+// WRONG - Compares references
+int[] arr1 = {1, 2, 3};
+int[] arr2 = {1, 2, 3};
+if (arr1 == arr2) { }  // Always false!
+
+// CORRECT - Compares content
+if (Arrays.equals(arr1, arr2)) { }
+```
+
+### 4. Modifying Array in Enhanced for Loop
+
+```java
+// DOESN'T WORK
+for (int num : arr) {
+    num = num * 2;  // Only modifies local variable
+}
+
+// CORRECT
+for (int i = 0; i < arr.length; i++) {
+    arr[i] = arr[i] * 2;
+}
+```
+
+### 5. Shallow Copy Issue
+
+```java
+// PROBLEM
+int[][] original = {{1, 2}, {3, 4}};
+int[][] copy = original.clone();  // Shallow copy
+copy[0][0] = 99;  // Also changes original[0][0]!
+
+// SOLUTION: Deep copy
+int[][] deepCopy = new int[original.length][];
+for (int i = 0; i < original.length; i++) {
+    deepCopy[i] = original[i].clone();
+}
+```
+
+---
+
+## Best Practices
+
+### 1. Use Enhanced for Loop When Possible
+
+```java
+// Good for read-only operations
+for (int num : arr) {
+    System.out.println(num);
+}
+```
+
+### 2. Validate Input
+
+```java
+public static int findMax(int[] arr) {
+    if (arr == null || arr.length == 0) {
+        throw new IllegalArgumentException("Array cannot be null or empty");
+    }
+    // ... rest of code
+}
+```
+
+### 3. Use Arrays Utility Methods
+
+```java
+// Instead of manual loops
+Arrays.sort(arr);
+Arrays.fill(arr, 0);
+System.out.println(Arrays.toString(arr));
+```
+
+### 4. Consider ArrayList for Dynamic Size
+
+```java
+// If size changes frequently, use ArrayList
+List<Integer> list = new ArrayList<>();
+list.add(1);
+list.add(2);
+list.remove(0);
+```
+
+### 5. Use Appropriate Data Structures
+
+```java
+// Fast lookup: HashSet
+// Sorted: TreeSet
+// Frequency count: HashMap
+// FIFO: Queue
+// LIFO: Stack
+```
+
+### 6. Document Assumptions
+
+```java
+/**
+ * Finds max element in array
+ * @param arr non-null, non-empty array
+ * @return maximum element
+ * @throws IllegalArgumentException if arr is null or empty
+ */
+public static int findMax(int[] arr) {
+    // ...
+}
+```
+
+---
+
+## Practice Problems
+
+### Beginner Level
+1. Find the sum and average of array elements
+2. Count even and odd numbers
+3. Reverse an array
+4. Find maximum and minimum
+5. Linear search
+6. Check if array is palindrome
+7. Count occurrences of an element
+8. Merge two arrays
+9. Copy array elements
+10. Remove duplicates from sorted array
+
+### Intermediate Level
+1. Binary search implementation
+2. Rotate array by k positions
+3. Find missing number in sequence
+4. Find duplicate number
+5. Move zeros to end
+6. Leaders in an array
+7. Maximum subarray sum (Kadane's)
+8. Stock buy and sell
+9. Pair sum problem
+10. Sort 0s, 1s, and 2s
+
+### Advanced Level
+1. Trapping rain water
+2. Longest consecutive sequence
+3. Product of array except self
+4. Find all subarrays with given sum
+5. Minimum platforms required
+6. Merge overlapping intervals
+7. Spiral matrix traversal
+8. Search in row-wise and column-wise sorted matrix
+9. Count inversions in array
+10. Maximum circular subarray sum
+
+---
+
+## Additional Advanced Topics
+
+### 1. Bit Manipulation with Arrays
+
+```java
+// XOR of all elements
+public static int xorAll(int[] arr) {
+    int xor = 0;
+    for (int num : arr) {
+        xor ^= num;
+    }
+    return xor;
+}
+
+// Find two non-repeating elements
+public static int[] findTwoNonRepeating(int[] arr) {
+    int xor = 0;
+    for (int num : arr) {
+        xor ^= num;
+    }
+    
+    int rightmostSetBit = xor & -xor;
+    int x = 0, y = 0;
+    
+    for (int num : arr) {
+        if ((num & rightmostSetBit) != 0) {
+            x ^= num;
+        } else {
+            y ^= num;
+        }
+    }
+    
+    return new int[]{x, y};
+}
+```
+
+### 2. Dynamic Programming with Arrays
+
+```java
+// Longest Increasing Subsequence
+public static int lengthOfLIS(int[] arr) {
+    if (arr.length == 0) return 0;
+    
+    int[] dp = new int[arr.length];
+    Arrays.fill(dp, 1);
+    int maxLength = 1;
+    
+    for (int i = 1; i < arr.length; i++) {
+        for (int j = 0; j < i; j++) {
+            if (arr[i] > arr[j]) {
+                dp[i] = Math.max(dp[i], dp[j] + 1);
+            }
+        }
+        maxLength = Math.max(maxLength, dp[i]);
+    }
+    
+    return maxLength;
+}
+```
+
+### 3. Greedy Algorithms
+
+```java
+// Minimum number of jumps to reach end
+public static int minJumps(int[] arr) {
+    if (arr.length <= 1) return 0;
+    if (arr[0] == 0) return -1;
+    
+    int maxReach = arr[0];
+    int steps = arr[0];
+    int jumps = 1;
+    
+    for (int i = 1; i < arr.length; i++) {
+        if (i == arr.length - 1) return jumps;
+        
+        maxReach = Math.max(maxReach, i + arr[i]);
+        steps--;
+        
+        if (steps == 0) {
+            jumps++;
+            if (i >= maxReach) return -1;
+            steps = maxReach - i;
+        }
+    }
+    
+    return -1;
+}
+```
+
+---
+
+## Summary
+
+### Key Takeaways
+
+1. **Arrays are fixed-size** - Choose wisely when creating
+2. **Zero-based indexing** - Valid indices: 0 to length-1
+3. **Contiguous memory** - Fast random access O(1)
+4. **Use Arrays utility class** - Built-in methods save time
+5. **Know your algorithms** - Two pointers, sliding window, Kadane's, etc.
+6. **Practice, practice, practice** - Arrays are fundamental to DSA
+
+### Time Complexities Quick Reference
+
+| Operation | Time Complexity |
+|-----------|----------------|
+| Access by index | O(1) |
+| Search (unsorted) | O(n) |
+| Search (sorted) | O(log n) |
+| Insert/Delete at end | O(1) |
+| Insert/Delete at middle | O(n) |
+| Sorting | O(n log n) |
+
+### Space Complexities Quick Reference
+
+| Structure | Space |
+|-----------|-------|
+| 1D Array | O(n) |
+| 2D Array | O(m × n) |
+| Jagged Array | Varies |
+| Auxiliary space for most algorithms | O(1) to O(n) |
 
 ---
