@@ -2185,9 +2185,91 @@ String result = sb.toString();
 String str = "Hello";
 
 // ❌ WRONG - endIndex is exclusive!
-str.substring(0, 5);  // "Hello" (NOT error!)
+str.substring(0, 5);  // "Hello" (valid)
 // str.substring(0, 6);  // StringIndexOutOfBoundsException!
+
+// ❌ WRONG
+str.substring(2, 1);  // start > end → Exception
 
 // ✅ CORRECT - Remember: [start, end)
 str.substring(0, str.length());  // Entire string
-str.substring(1, str.length
+str.substring(1, str.length());  // "ello"
+str.substring(0, 1);  
+```
+## Best Practices ✅
+### 1. Prefer equals() Over ==
+```java
+// ✅ Always
+if ("Hello".equals(str)) { }
+```
+
+### 2. Use StringBuilder for Multiple Modifications
+```java
+// ✅ Best for loops
+StringBuilder sb = new StringBuilder();
+for (String word : words) {
+    sb.append(word).append(" ");
+}
+```
+
+
+### 3. Pre-allocate StringBuilder Capacity
+```java
+// ✅ Performance boost
+StringBuilder sb = new StringBuilder(1000);
+```
+
+### 4. Prefer Built-in Methods
+```java
+// ❌ Manual
+if (str.indexOf("abc") != -1)
+
+// ✅ Cleaner & faster
+if (str.contains("abc"))
+```
+
+### 5. Use startsWith() Instead of substring()
+``` java
+// ❌ Inefficient
+str.substring(0, 5).equals("Hello");
+
+// ✅ Efficient
+str.startsWith("Hello");
+```
+
+### 6. Use String.join() for Collections
+```java
+List<String> words = List.of("Java", "is", "fast");
+String result = String.join(" ", words);
+```
+
+### 7. Handle null Safely
+```java
+// ✅ Null-safe
+Objects.equals(a, b);
+```
+
+### 8. Normalize Case Once
+```java
+// ✅ Good practice
+String s = input.toLowerCase();
+```
+
+### 9. Use Appropriate Frequency Strategy
+```java
+// Scenario	Best Choice
+// ASCII only	int[256]
+// a–z only	int[26]
+Unicode	HashMap<Character, Integer>
+Streams	Collectors.groupingBy()
+```
+### 10. Know When NOT to Use Strings
+```java
+// ❌ Heavy modifications
+String s = "";
+
+// ✅ Use mutable alternatives
+StringBuilder sb;
+char[];
+
+```
