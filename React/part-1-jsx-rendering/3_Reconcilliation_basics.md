@@ -42,14 +42,15 @@ Example:
 ```
 
 React sees:
-
+```js
 ✅ <div> - same, keep it
 ✅ <h1>Hello</h1> - same, keep it
 ⚠️ <p>Count: 1</p> - text changed, update only this
+```
 
 Only the <p> text gets updated in real DOM.
 
-Why React Compares
+**Why React Compares**
 Updating the real DOM is slow. Creating JavaScript objects is fast.
 So React:
 
@@ -102,6 +103,8 @@ What's the difference between a render and a DOM update?
 If a component's state changes from 5 to 5 (same value), does the DOM update?
 Transform this JSX to React.createElement():
 
-jsx   <div className="box">
+```js   
+<div className="box">
      <span>Hello</span>
    </div>
+   ```
