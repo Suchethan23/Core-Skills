@@ -920,19 +920,3 @@ NO → Controlled (when in doubt, use controlled)
 - Trust client-side validation alone (always validate server-side too)
 
 ---
-
-## What's Next?
-
-In **Part 6**, we'll dive into **Conditional Rendering & Lists**:
-- Conditional rendering patterns (`&&`, ternary, early returns)
-- Rendering lists with `map()`
-- The `key` prop - why it's critical
-- Common mistakes with keys
-- Index as key - why it's usually wrong
-- Reconciliation with lists
-
-Forms and events are how users interact with your app. Lists and conditional rendering are how you display dynamic data. Together, they form the core of interactive UIs!</parameter>
-
----
-
-
